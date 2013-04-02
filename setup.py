@@ -14,15 +14,18 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with python-kmod.  If not, see <http://www.gnu.org/licenses/>.
-
-from distutils.core import setup
+from setuptools import setup
 from distutils.extension import Extension as _Extension
 import os as _os
 import sys as _sys
 import platform
 
-from Cython.Distutils import build_ext as _build_ext
-
+# setuptools DWIM monkey-patch madness
+# http://mail.python.org/pipermail/distutils-sig/2007-September/thread.html#8204
+import sys
+if 'setuptools.extension' in sys.modules:
+    m = sys.modules['setuptools.extension']
+    m.Extension.__dict__ = m._Extension.__dict__
 
 package_name = 'kmod'
 
@@ -54,6 +57,7 @@ setup(
     provides=[package_name],
     maintainer="Andy Grover",
     maintainer_email="agrover@redhat.com",
-    cmdclass = {'build_ext': _build_ext},
     ext_modules=ext_modules,
+    install_requires=["Cython"],
+    setup_requires=["setuptools_cython"],
     )
